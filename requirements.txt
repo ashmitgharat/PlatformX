@@ -1,0 +1,13 @@
+flask==2.0.1
+flask-socketio==5.1.1
+opencv-python==4.5.5.64
+deepface==0.0.79
+SpeechRecognition==3.8.1
+textblob==0.15.3
+fpdf==1.7.2
+sounddevice==0.4.6
+Pillow==9.5.0
+python-engineio==4.3.4
+python-socketio==5.7.2
+matplotlib==3.5.1
+numpy==1.21.0

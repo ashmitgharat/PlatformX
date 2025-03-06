@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Interview Companion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #video { border: 2px solid #000; }
+        #status { margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>AI Interview Companion</h1>
+    <img id="video" src="{{ url_for('video_feed') }}" width="640" height="480">
+    <div>
+        <button onclick="startRecording()">Start</button>
+        <button onclick="stopRecording()">Stop</button>
+        <button onclick="downloadReport()">Download Report</button>
+    </div>
+    <div id="status">
+        <p>Emotion: <span id="emotion">-</span> (Confidence: <span id="emotion_conf">-</span>)</p>
+        <p>Gender: <span id="gender">-</span> (Confidence: <span id="gender_conf">-</span>)</p>
+        <p>Age: <span id="age">-</span></p>
+        <p>Speech: <span id="speech">-</span> (Sentiment: <span id="sentiment">-</span>)</p>
+    </div>
+
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('live_update', function(data) {
+            if (data.error) {
+                document.getElementById('emotion').innerText = 'Error';
+            } else {
+                document.getElementById('emotion').innerText = data.emotion;
+                document.getElementById('emotion_conf').innerText = data.emotion_confidence.toFixed(2);
+                document.getElementById('gender').innerText = data.gender;
+                document.getElementById('gender_conf').innerText = data.gender_confidence.toFixed(2);
+                document.getElementById('age').innerText = data.age;
+            }
+        });
+        socket.on('audio_update', function(data) {
+            document.getElementById('speech').innerText = data.text;
+            document.getElementById('sentiment').innerText = data.sentiment.toFixed(2);
+        });
+
+        function startRecording() {
+            fetch('/start', { method: 'POST' }).then(res => res.json()).then(data => alert(data.message || data.error));
+        }
+        function stopRecording() {
+            fetch('/stop', { method: 'POST' }).then(res => res.json()).then(data => alert(data.message || data.error));
+        }
+        function downloadReport() {
+            window.location.href = '/download';
+        }
+    </script>
+</body>
+</html>
